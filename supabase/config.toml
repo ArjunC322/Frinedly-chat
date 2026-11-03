@@ -1,0 +1,4 @@
+[functions.livekit-token]
+# JWT verification is performed by auth.getUser in the function, supporting
+# current Supabase signing keys rather than the gateway's legacy JWT verifier.
+verify_jwt = false

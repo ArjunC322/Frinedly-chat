@@ -2,6 +2,8 @@
 
 A responsive, invitation-only website for private one-to-one chats between friends. Accounts are created by you in Supabase; there is no public registration form. Includes email/password login, an account directory, friend search, real-time text messages, earlier-message loading, and mobile layouts.
 
+Also includes optional LiveKit Cloud one-to-one audio/video calls: incoming invitations, accept/decline, microphone mute, camera toggle, hang-up, and mobile call controls. Calling needs the additional setup below; existing text chat works independently.
+
 ## What is free?
 
 | Service | Use | Free-tier notes |
@@ -97,6 +99,42 @@ Supabase project creation, account creation, repository variables, and enabling 
 4. Try multiline text, friend search, mobile view, signing out, and more than 50 messages to test history loading.
 5. Sign in as a third friend: they must not see the first pair's conversation. The included database tests check this restriction independently of the UI.
 6. If messages do not update live, verify `messages` is enabled in the `supabase_realtime` publication and check the visible connection/error status. The app also checks messages every 15 seconds while visible.
+
+## 6. Enable audio and video calls (LiveKit Cloud)
+
+1. In Supabase **SQL Editor**, run [supabase/calls.sql](./supabase/calls.sql) once, AFTER the original schema. Existing projects must run only this additional script, not rerun `schema.sql`.
+2. Create a project on [LiveKit Cloud](https://cloud.livekit.io/). Find its **WebSocket URL** (`wss://...livekit.cloud`), API key and API secret in project settings.
+3. In Supabase **Edge Functions → Secrets**, add:
+   - `LIVEKIT_URL`: the `wss://` URL.
+   - `LIVEKIT_API_KEY`: the LiveKit API key.
+   - `LIVEKIT_API_SECRET`: the LiveKit API secret.
+4. Deploy the `livekit-token` Edge Function using the Supabase CLI (install the CLI using its [official instructions](https://supabase.com/docs/guides/cli/getting-started)):
+
+   ```sh
+   cd /Users/BN82045/Desktop/friend-chat
+   supabase login
+   supabase link --project-ref bynvjlousqmgcmppakym
+   supabase functions deploy livekit-token --no-verify-jwt
+   ```
+
+   The function itself verifies the user's bearer token with Supabase `auth.getUser` on EVERY request, then checks participant membership, accepted status, and expiry under row-level security. Disabling the gateway's legacy JWT verifier is necessary for current signing-key compatibility; it does not make the endpoint unauthenticated. `supabase/config.toml` also records this setting.
+
+   If deploying in the dashboard instead, include both `index.ts` and `handler.ts` from `supabase/functions/livekit-token/`, name the function **livekit-token**, and disable the gateway's legacy JWT verification. The default `SUPABASE_URL` and `SUPABASE_ANON_KEY` environment values are supplied by Supabase.
+5. Upload/push the changed website source, updated `package.json` **and** `package-lock.json`, plus new call files. Run the existing GitHub Pages workflow. No LiveKit secrets or extra Vite variables belong in GitHub/browser configuration.
+6. With two separate accounts in separate browser profiles/devices, select a friend and click **Audio call** or **Video call**. The recipient sees **Accept / Decline** while their site is open. On acceptance, both browsers request microphone/camera permission. Use HTTPS (GitHub Pages already does).
+7. Test both directions, decline, cancel, busy users, a 45-second unanswered timeout, mute/unmute, camera off/on, hang-up from either side, permission denial, and reconnecting. Confirm the camera/microphone indicator turns off on hang-up/sign-out. Use headphones to prevent feedback.
+
+Call invitations/state are stored in Supabase; media travels through LiveKit, not through your messages table. Realtime events and a three-second fallback poll discover incoming/ended calls. Tokens last two minutes for initial joining; active calls have a two-hour application limit (token expiry alone does not disconnect an established session). Calls are not recorded or configured for end-to-end encryption. Only participants can retrieve a room token; the backend grants no recording, room administration, or data publishing privileges.
+
+**Both people must keep the website open.** There are no closed-app push notifications or background call guarantees, and browsers may suspend hidden/mobile tabs. If a browser crashes, the surviving participant can hang up; otherwise an accepted reservation expires after two hours. An unanswered invitation expires after 45 seconds. If setup/network errors appear, use the separate call panel; text chat remains usable. Closing a setup warning hides repeat notices until the next sign-in, but starting a call still shows errors.
+
+Free LiveKit/Supabase plans have participant-minute, bandwidth, concurrent-connection, function-invocation, and database quotas. Monitor both dashboards; this is not unlimited free calling. At the time of writing, LiveKit Build includes 5,000 WebRTC participant-minutes (two users in a 10-minute call use about 20). Verify [current pricing](https://livekit.com/pricing.md) before use. No AI agent, recording, phone number, or paid telephony feature is needed.
+
+The deployment workflow also runs Deno tests for the Edge Function's authentication, participant/expiry checks, and restricted room-token grants. To run locally with Deno installed:
+
+```sh
+deno test --allow-env --node-modules-dir=none --config supabase/functions/livekit-token/deno.json supabase/functions/livekit-token/handler_test.ts
+```
 
 ## Privacy, limits, and ownership
 
