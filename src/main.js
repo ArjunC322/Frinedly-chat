@@ -1,6 +1,7 @@
 import './style.css';
 import { getFriends, getMessages, sendMessage, setupError, supabase } from './api.js';
 import { initials, validateMessage } from './helpers.js';
+import { createCalls } from './calls.js';
 
 const $ = (id) => document.getElementById(id);
 let user = null;
@@ -15,6 +16,8 @@ let renderedMessageIds = '';
 let sending = false;
 let realtimeStatus = '';
 const drafts = new Map();
+const calls = supabase ? createCalls(supabase, () => peer,
+  (id) => friends.find((friend) => friend.id === id)?.display_name || 'Your friend') : null;
 
 function showError(id, error) {
   $(id).textContent = error ? error.message || String(error) : '';
@@ -123,6 +126,7 @@ function selectFriend(friend) {
 }
 
 function stopChat() {
+  calls?.reset();
   clearInterval(pollTimer);
   pollTimer = null;
   if (channel) {
@@ -173,6 +177,7 @@ async function applySession(session) {
   }
   if (version !== sessionVersion) return;
   const userId = user.id;
+  calls?.start(userId);
   channel = supabase.channel(`messages-${userId}`)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `recipient_id=eq.${userId}` }, () => void refreshThread())
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `sender_id=eq.${userId}` }, () => void refreshThread())
@@ -217,6 +222,7 @@ $('login-form').addEventListener('submit', async (event) => {
 $('sign-out').addEventListener('click', async () => {
   $('sign-out').disabled = true;
   try {
+    await calls?.finish('You signed out.');
     const { error } = await supabase.auth.signOut({ scope: 'local' });
     if (error) throw error;
   } catch (error) {

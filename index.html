@@ -60,7 +60,7 @@
         <section class="thread" aria-label="Conversation">
           <div id="empty-thread" class="empty-thread"><div class="empty-art" aria-hidden="true">hi<span>.</span></div><span class="eyebrow">MAKE A LITTLE TIME</span><h2>A good chat starts with hello.</h2><p>Choose a friend to pick up the conversation.</p></div>
           <div id="active-thread" class="active-thread" hidden>
-            <header class="thread-header"><button id="back-to-friends" class="text-button" type="button" aria-label="Back to friends">&larr; Friends</button><span id="peer-avatar" class="avatar peach"></span><div><h2 id="peer-name"></h2><p>Private conversation</p></div><span class="thread-badge">JUST THE TWO OF YOU</span></header>
+            <header class="thread-header"><button id="back-to-friends" class="text-button" type="button" aria-label="Back to friends">&larr; Friends</button><span id="peer-avatar" class="avatar peach"></span><div><h2 id="peer-name"></h2><p>Private conversation</p></div><div class="call-launch"><button id="audio-call" class="text-button" type="button">Audio call</button><button id="video-call" class="text-button" type="button">Video call</button></div></header>
             <div id="messages" class="messages" tabindex="0" aria-label="Message history">
               <button id="load-older" class="text-button older-button" type="button" hidden>Load earlier messages</button>
               <p id="thread-status" class="subtle" role="status"></p>
@@ -75,6 +75,22 @@
           <div id="chat-error" class="chat-error error" role="alert" hidden></div>
         </section>
       </main>
+      <section id="call-panel" class="call-panel" aria-label="Call controls" hidden>
+        <div class="call-heading"><div><span class="eyebrow">YOUR PRIVATE CALL</span><h2 id="call-title"></h2></div><button id="dismiss-call" class="text-button" type="button" hidden>Close</button></div>
+        <p id="call-status" role="status"></p>
+        <p id="call-error" class="error" role="alert" hidden></p>
+        <div id="call-videos" class="call-videos" hidden><div><span>Your friend</span><div id="remote-video"></div></div><div><span>You (preview)</span><div id="local-video"></div></div></div>
+        <div id="remote-audio"></div>
+        <div class="call-actions">
+          <button id="accept-call" class="primary-button" type="button" hidden>Accept</button>
+          <button id="decline-call" class="danger-button" type="button" hidden>Decline</button>
+          <button id="mute-call" class="text-button" type="button" aria-pressed="false" hidden>Mute microphone</button>
+          <button id="camera-call" class="text-button" type="button" aria-pressed="false" hidden>Turn camera off</button>
+          <button id="play-call-audio" class="text-button" type="button" hidden>Enable call audio</button>
+          <button id="hangup-call" class="danger-button" type="button" hidden>Hang up</button>
+        </div>
+        <small>Keep this page open. Calls are not recorded or end-to-end encrypted by this app.</small>
+      </section>
       <footer class="site-footer"><span>A LITTLE SPACE FOR REAL CONNECTION.</span><span>Made for your circle, not the whole world.</span></footer>
     </div>
     <script type="module" src="/src/main.js"></script>
