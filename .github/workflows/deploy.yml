@@ -23,6 +23,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Test call token authorization
+        run: deno test --allow-env --node-modules-dir=none --config supabase/functions/livekit-token/deno.json supabase/functions/livekit-token/handler_test.ts
       - name: Check public connection settings
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
