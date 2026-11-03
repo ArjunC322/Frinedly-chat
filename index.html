@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#244d42" />
+    <meta name="description" content="A little space to stay close. Private chats for your circle of friends." />
+    <title>Little Circle | Friends, a little closer</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Little Circle home"><span class="brand-mark" aria-hidden="true">lc</span> little circle<span class="brand-dot">.</span></a>
+        <span class="top-note">GOOD FRIENDS. GREAT CONVERSATIONS.</span>
+      </header>
+
+      <main id="login-view" class="landing">
+        <section class="intro">
+          <span class="eyebrow"><span class="tiny-dot"></span> YOUR PEOPLE, YOUR SPACE</span>
+          <h1>Life happens.<br />Stay <span>in the loop.</span></h1>
+          <p>A little corner of the internet for your favorite people. Catch up, share the small things, and pick up right where you left off.</p>
+          <div class="conversation-art" aria-hidden="true">
+            <div class="art-label">THE LITTLE THINGS MATTER</div>
+            <div class="art-bubble art-left"><span class="mini-avatar peach">J</span><div>Same place, same time?<small>Just now</small></div></div>
+            <div class="art-bubble art-right"><div>Wouldn't miss it.<small>Delivered with a smile</small></div><span class="mini-avatar green">Y</span></div>
+            <span class="art-spark">+</span>
+          </div>
+          <div class="intro-footer"><span class="overlap-avatar peach">A</span><span class="overlap-avatar lavender">M</span><span class="overlap-avatar green">J</span><span>Less scrolling. More connecting.</span></div>
+        </section>
+        <section class="login-card">
+          <span class="eyebrow">WELCOME TO YOUR CIRCLE</span>
+          <h2>Hey, you.</h2>
+          <p>Sign in and see what your friends are up to.</p>
+          <div id="setup-notice" class="notice" hidden>
+            <strong>One little setup step.</strong>
+            <p>Add your Supabase project URL and public publishable key, then rebuild. Follow the setup guide included with this project.</p>
+          </div>
+          <form id="login-form">
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="username" required maxlength="254" />
+            <div class="label-row"><label for="password">Password</label><button id="toggle-password" class="text-button" type="button" aria-controls="password" aria-pressed="false">Show password</button></div>
+            <input id="password" name="password" type="password" placeholder="Your password" autocomplete="current-password" required />
+            <p id="login-error" class="error" role="alert" hidden></p>
+            <button id="login-button" class="primary-button" type="submit">Step inside <span aria-hidden="true">&rarr;</span></button>
+          </form>
+          <div class="invite-note"><span class="invite-icon" aria-hidden="true">+</span><p><strong>A small circle, by invitation.</strong><br />Need an account or a password reset? Ask the friend who invited you.</p></div>
+          <p class="privacy-note">Your chats are visible only to you and your recipient in the app. Not end-to-end encrypted.</p>
+        </section>
+      </main>
+
+      <main id="chat-view" class="chat-layout" hidden>
+        <aside class="sidebar">
+          <div class="sidebar-heading"><div><span class="eyebrow">YOUR LITTLE CIRCLE</span><h2>Friends</h2></div><span id="friend-count" class="count-pill">0</span></div>
+          <label for="friend-search" class="sr-only">Find a friend</label>
+          <input id="friend-search" type="search" placeholder="Find a friend..." autocomplete="off" />
+          <p id="friends-status" class="subtle" role="status"></p>
+          <nav id="friends" aria-label="Friends"></nav>
+          <div class="account"><div class="account-info"><span id="my-avatar" class="avatar green"></span><div><strong id="my-name"></strong><small>That's you</small></div></div><button id="sign-out" class="text-button" type="button">Sign out</button></div>
+        </aside>
+        <section class="thread" aria-label="Conversation">
+          <div id="empty-thread" class="empty-thread"><div class="empty-art" aria-hidden="true">hi<span>.</span></div><span class="eyebrow">MAKE A LITTLE TIME</span><h2>A good chat starts with hello.</h2><p>Choose a friend to pick up the conversation.</p></div>
+          <div id="active-thread" class="active-thread" hidden>
+            <header class="thread-header"><button id="back-to-friends" class="text-button" type="button" aria-label="Back to friends">&larr; Friends</button><span id="peer-avatar" class="avatar peach"></span><div><h2 id="peer-name"></h2><p>Private conversation</p></div><span class="thread-badge">JUST THE TWO OF YOU</span></header>
+            <div id="messages" class="messages" tabindex="0" aria-label="Message history">
+              <button id="load-older" class="text-button older-button" type="button" hidden>Load earlier messages</button>
+              <p id="thread-status" class="subtle" role="status"></p>
+              <div id="message-list" role="log" aria-label="Messages" aria-live="polite" aria-relevant="additions"></div>
+            </div>
+            <form id="message-form" class="composer">
+              <label for="message" class="sr-only">Your message</label>
+              <textarea id="message" name="message" rows="2" maxlength="4000" placeholder="Share a little something..." required></textarea>
+              <div class="composer-bottom"><span>Enter to send &middot; Shift + Enter for a new line</span><button id="send-button" class="primary-button" type="submit">Send <span aria-hidden="true">&rarr;</span></button></div>
+            </form>
+          </div>
+          <div id="chat-error" class="chat-error error" role="alert" hidden></div>
+        </section>
+      </main>
+      <footer class="site-footer"><span>A LITTLE SPACE FOR REAL CONNECTION.</span><span>Made for your circle, not the whole world.</span></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
